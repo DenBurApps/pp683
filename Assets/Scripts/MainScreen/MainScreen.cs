@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TheraBytes.BetterUi;
 using TMPro;
 using UnityEngine;
@@ -17,9 +15,12 @@ public class MainScreen : MonoBehaviour
     [SerializeField] private Button _hobbyButton;
     [SerializeField] private Button _projectsButton;
     [SerializeField] private MainScreenHobbieController _hobbieController;
+    [SerializeField] private MainScreenProjectController _projectController;
     [SerializeField] private Menu _menu;
     [SerializeField] private AddHobbie _addHobbie;
     [SerializeField] private EditHobby _editHobby;
+    [SerializeField] private AddProjectScreen _addProjectScreen;
+    [SerializeField] private EditProject _editProject;
 
     private Button _currentSelectedButton;
 
@@ -40,6 +41,8 @@ public class MainScreen : MonoBehaviour
         _menu.AddClicked += OnAddClicked;
         _addHobbie.BackClicked += Enable;
         _editHobby.BackClicked += Enable;
+        _addProjectScreen.BackClicked += Enable;
+        _editProject.BackClicked += Enable;
     }
 
     private void OnDisable()
@@ -49,12 +52,15 @@ public class MainScreen : MonoBehaviour
         _menu.AddClicked -= OnAddClicked;
         _addHobbie.BackClicked -= Enable;
         _editHobby.BackClicked -= Enable;
+        _addProjectScreen.BackClicked -= Enable;
+        _editProject.BackClicked -= Enable;
     }
 
     private void Start()
     {
         SetButton(_hobbyButton);
         _hobbieController.gameObject.SetActive(true);
+        _projectController.gameObject.SetActive(false);
         Enable();
         _projectsButton.GetComponent<BetterImage>().color = _unselectButtonColor;
         _projectsButton.GetComponentInChildren<TMP_Text>().color = _unselectTextColor;
@@ -81,6 +87,17 @@ public class MainScreen : MonoBehaviour
         _currentSelectedButton = button;
         _currentSelectedButton.GetComponent<BetterImage>().color = _selectButtonColor;
         _currentSelectedButton.GetComponentInChildren<TMP_Text>().color = _selectTextColor;
+
+        if (_currentSelectedButton == _hobbyButton)
+        {
+            _hobbieController.gameObject.SetActive(true);
+            _projectController.gameObject.SetActive(false);
+        }
+        else
+        {
+            _hobbieController.gameObject.SetActive(false);
+            _projectController.gameObject.SetActive(true);
+        }
     }
 
     private void OnAddClicked()
@@ -90,6 +107,11 @@ public class MainScreen : MonoBehaviour
             if (_currentSelectedButton == _hobbyButton)
             {
                 AddHobbieClicked?.Invoke();
+                Disable();
+            }
+            else
+            {
+                AddProjectClicked?.Invoke();
                 Disable();
             }
         }
