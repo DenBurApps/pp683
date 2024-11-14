@@ -9,9 +9,17 @@ public class PhotosController : MonoBehaviour
     [SerializeField] private GameObject _noItemObj;
     private byte[] _photosPath = null;
     [SerializeField] private GameObject _addButton;
+    [SerializeField] private GameObject _secondButton;
+    [SerializeField] private GameObject _deleteButton;
 
     public event Action SetPhoto;
-    
+
+    private void Start()
+    {
+        _secondButton.gameObject.SetActive(false);
+        _deleteButton.gameObject.SetActive(false);
+    }
+
     public void OnSetImageButtonClick()
     {
         ImagePicker.PickImage(OnImageSelected);
@@ -98,6 +106,9 @@ public class PhotosController : MonoBehaviour
             _imagePlacer.SetImage(_photosPath);
             _imagePlacer.gameObject.SetActive(true);
             SetPhoto?.Invoke();
+            _secondButton.gameObject.SetActive(true);
+            _deleteButton.gameObject.SetActive(true);
+            _addButton.gameObject.SetActive(false);
             if(_noItemObj != null)
             {
                 _noItemObj.gameObject.SetActive(false);
@@ -114,6 +125,10 @@ public class PhotosController : MonoBehaviour
         {
             _noItemObj.gameObject.SetActive(true);
         }
+        
+        _secondButton.gameObject.SetActive(false);
+        _deleteButton.gameObject.SetActive(false);
+        _addButton.gameObject.SetActive(true);
     }
 
     public void SetPhotos(byte[] photo)
