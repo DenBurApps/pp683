@@ -21,6 +21,8 @@ public class MainScreen : MonoBehaviour
     [SerializeField] private EditHobby _editHobby;
     [SerializeField] private AddProjectScreen _addProjectScreen;
     [SerializeField] private EditProject _editProject;
+    [SerializeField] private ArticleScreen _articleScreen;
+    [SerializeField] private Settings _settings;
 
     private Button _currentSelectedButton;
 
@@ -28,6 +30,8 @@ public class MainScreen : MonoBehaviour
 
     public event Action AddHobbieClicked;
     public event Action AddProjectClicked;
+    public event Action ArticlesClicked;
+    public event Action SettingsClicked; 
 
     private void Awake()
     {
@@ -39,10 +43,14 @@ public class MainScreen : MonoBehaviour
         _hobbyButton.onClick.AddListener((() => SetButton(_hobbyButton)));
         _projectsButton.onClick.AddListener((() => SetButton(_projectsButton)));
         _menu.AddClicked += OnAddClicked;
+        _menu.ArticlesClicked += OnArticlesClicked;
+        _menu.SettingsClicked += OnSettingsClicked;
         _addHobbie.BackClicked += Enable;
         _editHobby.BackClicked += Enable;
         _addProjectScreen.BackClicked += Enable;
         _editProject.BackClicked += Enable;
+        _articleScreen.HomeClicked += Enable;
+        _settings.HomeClicked += Enable;
     }
 
     private void OnDisable()
@@ -50,10 +58,14 @@ public class MainScreen : MonoBehaviour
         _hobbyButton.onClick.RemoveListener((() => SetButton(_hobbyButton)));
         _projectsButton.onClick.RemoveListener((() => SetButton(_projectsButton)));
         _menu.AddClicked -= OnAddClicked;
+        _menu.ArticlesClicked -= OnArticlesClicked;
+        _menu.SettingsClicked -= OnSettingsClicked;
         _addHobbie.BackClicked -= Enable;
         _editHobby.BackClicked -= Enable;
         _addProjectScreen.BackClicked -= Enable;
         _editProject.BackClicked -= Enable;
+        _articleScreen.HomeClicked -= Enable;
+        _settings.HomeClicked -= Enable;
     }
 
     private void Start()
@@ -115,5 +127,18 @@ public class MainScreen : MonoBehaviour
                 Disable();
             }
         }
+    }
+
+    private void OnArticlesClicked()
+    {
+        ArticlesClicked?.Invoke();
+        Disable();
+    }
+
+    private void OnSettingsClicked()
+    {
+        SettingsClicked?.Invoke();
+        _settings.ShowSettings();
+        Disable();
     }
 }

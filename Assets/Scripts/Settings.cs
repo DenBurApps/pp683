@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,8 +15,12 @@ public class Settings : MonoBehaviour
     [SerializeField] private GameObject _contactCanvas;
     [SerializeField] private GameObject _versionCanvas;
     [SerializeField] private TMP_Text _versionText;
+    [SerializeField] private Menu _menu;
     private string _version = "Application version:\n";
 
+    public event Action HomeClicked;
+    public event Action ArticlesClicked;
+    
     private void Awake()
     {
         _settingsCanvas.SetActive(false);
@@ -24,6 +29,18 @@ public class Settings : MonoBehaviour
         _contactCanvas.SetActive(false);
         _versionCanvas.SetActive(false);
         SetVersion();
+    }
+
+    private void OnEnable()
+    {
+        _menu.HomeClicked += () => HomeClicked?.Invoke();
+        _menu.ArticlesClicked += () => ArticlesClicked?.Invoke();
+    }
+
+    private void OnDisable()
+    {
+        _menu.HomeClicked -= () => HomeClicked?.Invoke();
+        _menu.ArticlesClicked -= () => ArticlesClicked?.Invoke();
     }
 
     private void SetVersion()
