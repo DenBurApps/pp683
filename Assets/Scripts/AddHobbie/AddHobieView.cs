@@ -13,6 +13,8 @@ public class AddHobieView : MonoBehaviour
     [SerializeField] private TMP_InputField _nameInput;
     [SerializeField] private TMP_InputField _descriptionInput;
     [SerializeField] private TMP_InputField _goalInput;
+    [SerializeField] private GameObject _first;
+    [SerializeField] private GameObject _second;
 
     private ScreenVisabilityHandler _screenVisabilityHandler;
 
@@ -31,7 +33,9 @@ public class AddHobieView : MonoBehaviour
     {
         _nameInput.onValueChanged.AddListener(OnNameInputed);
         _descriptionInput.onValueChanged.AddListener(OnDescriptionInputed);
+        _goalInput.onSelect.AddListener(GoalStartInputed);
         _goalInput.onValueChanged.AddListener(OnGoaldInputed);
+        _goalInput.onDeselect.AddListener(GoladEndInputed); 
         _saveButton.onClick.AddListener(OnSaveClicked);
         _backButton.onClick.AddListener(OnBackClicked);
     }
@@ -40,7 +44,9 @@ public class AddHobieView : MonoBehaviour
     {
         _nameInput.onValueChanged.RemoveListener(OnNameInputed);
         _descriptionInput.onValueChanged.RemoveListener(OnDescriptionInputed);
+        _goalInput.onSelect.RemoveListener(GoalStartInputed);
         _goalInput.onValueChanged.RemoveListener(OnGoaldInputed);
+        _goalInput.onDeselect.RemoveListener(GoladEndInputed); 
         _saveButton.onClick.RemoveListener(OnSaveClicked);
         _backButton.onClick.RemoveListener(OnBackClicked);
     }
@@ -79,5 +85,20 @@ public class AddHobieView : MonoBehaviour
     private void OnSaveClicked() => SaveClicked?.Invoke();
     private void OnNameInputed(string text) => NameInputed?.Invoke(text);
     private void OnDescriptionInputed(string text) => DescriptionInputed?.Invoke(text);
-    private void OnGoaldInputed(string text) => GoalInputed?.Invoke(text);
+    private void OnGoaldInputed(string text)
+    {
+        GoalInputed?.Invoke(text);
+    }
+
+    private void GoalStartInputed(string text)
+    {
+        _first.gameObject.SetActive(false);
+        _second.gameObject.SetActive(false);
+    }
+
+    private void GoladEndInputed(string text)
+    {
+        _first.gameObject.SetActive(true);
+        _second.gameObject.SetActive(true);
+    }
 }

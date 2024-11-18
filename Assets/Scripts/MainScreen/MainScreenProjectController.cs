@@ -24,6 +24,7 @@ public class MainScreenProjectController : MonoBehaviour
         {
             plane.SetHolder(_logoHolder);
             plane.Opened += OpenPlane;
+            plane.UpdatedData += SaveProjects;
         }
 
         _addProject.Saved += EnablePlane;
@@ -35,6 +36,7 @@ public class MainScreenProjectController : MonoBehaviour
         foreach (var plane in _planes)
         {
             plane.Opened -= OpenPlane;
+            plane.UpdatedData -= SaveProjects;
         }
 
         _addProject.Saved -= EnablePlane;

@@ -15,6 +15,7 @@ public class HobbyPlane : MonoBehaviour
     private HobbyLogoHolder _logoHolder;
 
     public event Action<HobbyPlane> Opened;
+    public event Action UpdatedData;
     
     public HobbyData Data { get; private set; }
     public bool IsActive { get; private set; }
@@ -48,6 +49,16 @@ public class HobbyPlane : MonoBehaviour
         _description.text = Data.Description;
         _imagePlacer.SetImage(Data.ImagePath);
         _logo.enabled = false;
+        
+        if (Data.Type is GoalTypes.Yes or GoalTypes.AlmostThere)
+        {
+            _logo.enabled = true;
+            _logo.sprite = _logoHolder.GetLogoSprite(Data.Type);
+        }
+        else
+        {
+            _logo.enabled = false;
+        }
     }
 
     public void UpdateGoalData(HobbyData data)
@@ -69,6 +80,8 @@ public class HobbyPlane : MonoBehaviour
         {
             _logo.enabled = false;
         }
+        
+        UpdatedData?.Invoke();
     }
 
     public void Disable()

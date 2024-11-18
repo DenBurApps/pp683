@@ -19,6 +19,10 @@ public class EditProjectView : MonoBehaviour
     [SerializeField] private TMP_InputField _endTimeInput;
     [SerializeField] private TMP_InputField _startDateInput;
     [SerializeField] private TMP_InputField _endDateInput;
+    [SerializeField] private GameObject[] _disableObject;
+
+    [SerializeField] private GameObject _first;
+    [SerializeField] private GameObject _second;
 
     private ScreenVisabilityHandler _screenVisabilityHandler;
 
@@ -42,12 +46,25 @@ public class EditProjectView : MonoBehaviour
     {
         _nameInput.onValueChanged.AddListener(OnNameInputed);
         _descriptionInput.onValueChanged.AddListener(OnDescriptionInputed);
+        _goalInput.onSelect.AddListener(GoalStartInputed);
         _goalInput.onValueChanged.AddListener(OnGoaldInputed);
-        _startTimeInput.onValueChanged.AddListener(OnStartTimeChanged);
-        _endTimeInput.onValueChanged.AddListener(OnEndTimeChanged);
-        _startDateInput.onValueChanged.AddListener(OnStartDateChanged);
-        _endDateInput.onValueChanged.AddListener(OnEndDateChanged);
-        
+        _goalInput.onDeselect.AddListener(GoladEndInputed);
+        _startTimeInput.onSelect.AddListener(HideInput);
+        _startTimeInput.onEndEdit.AddListener(OnStartTimeChanged);
+        _startTimeInput.onDeselect.AddListener(ActivateInput);
+
+        _endTimeInput.onSelect.AddListener(HideInput);
+        _endTimeInput.onEndEdit.AddListener(OnEndTimeChanged);
+        _endTimeInput.onDeselect.AddListener(ActivateInput);
+
+        _startDateInput.onSelect.AddListener(HideInput);
+        _startDateInput.onEndEdit.AddListener(OnStartDateChanged);
+        _startDateInput.onDeselect.AddListener(ActivateInput);
+
+        _endDateInput.onSelect.AddListener(HideInput);
+        _endDateInput.onEndEdit.AddListener(OnEndDateChanged);
+        _endDateInput.onDeselect.AddListener(ActivateInput);
+
         _saveButton.onClick.AddListener(OnSaveClicked);
         _backButton.onClick.AddListener(OnBackClicked);
         _deleteButton.onClick.AddListener(OnDeleteClicked);
@@ -57,12 +74,19 @@ public class EditProjectView : MonoBehaviour
     {
         _nameInput.onValueChanged.RemoveListener(OnNameInputed);
         _descriptionInput.onValueChanged.RemoveListener(OnDescriptionInputed);
+        _goalInput.onSelect.RemoveListener(GoalStartInputed);
         _goalInput.onValueChanged.RemoveListener(OnGoaldInputed);
-        _startTimeInput.onValueChanged.RemoveListener(OnStartTimeChanged);
-        _endTimeInput.onValueChanged.RemoveListener(OnEndTimeChanged);
-        _startDateInput.onValueChanged.RemoveListener(OnStartDateChanged);
-        _endDateInput.onValueChanged.RemoveListener(OnEndDateChanged);
-        
+        _goalInput.onDeselect.RemoveListener(GoladEndInputed);
+        _startTimeInput.onEndEdit.RemoveListener(OnStartTimeChanged);
+        _endTimeInput.onEndEdit.RemoveListener(OnEndTimeChanged);
+        _startDateInput.onEndEdit.RemoveListener(OnStartDateChanged);
+        _endDateInput.onEndEdit.RemoveListener(OnEndDateChanged);
+
+        _startTimeInput.onDeselect.RemoveListener(ActivateInput);
+        _endTimeInput.onDeselect.RemoveListener(ActivateInput);
+        _startDateInput.onDeselect.RemoveListener(ActivateInput);
+        _endDateInput.onDeselect.RemoveListener(ActivateInput);
+
         _saveButton.onClick.RemoveListener(OnSaveClicked);
         _backButton.onClick.RemoveListener(OnBackClicked);
         _deleteButton.onClick.RemoveListener(OnDeleteClicked);
@@ -97,7 +121,7 @@ public class EditProjectView : MonoBehaviour
     {
         _goalInput.text = text;
     }
-    
+
     public void SetStartTime(string time)
     {
         _startTimeInput.text = time;
@@ -121,47 +145,77 @@ public class EditProjectView : MonoBehaviour
     private void ValidateAndFormatTimeInput(TMP_InputField inputField, Action<string> eventAction)
     {
         string input = inputField.text;
-
-        if (Regex.IsMatch(input, @"^\d{4}$"))
+        
+        if (input.Length == 4)
         {
-            int hours = int.Parse(input.Substring(0, 2));
-            int minutes = int.Parse(input.Substring(2, 2));
-
-            if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59)
+            try
             {
-                string formattedTime = $"{hours:D2}:{minutes:D2}";
+                string formattedTime = $"{input.Substring(0, 2)}:{input.Substring(2, 2)}";
                 inputField.text = formattedTime;
                 eventAction?.Invoke(formattedTime);
             }
-        }
-        else
-        {
-            string timePattern = @"^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
-            if (Regex.IsMatch(input, timePattern))
+            catch (Exception ex)
             {
-                eventAction?.Invoke(input);
+                Debug.Log($"Error formatting time input: {ex.Message}");
             }
+        }
+        else if (input.Length > 4)
+        {
+            inputField.text = input.Substring(0, 4);
         }
     }
 
     private void ValidateAndFormatDateInput(TMP_InputField inputField, Action<string> eventAction)
     {
-        if (Regex.IsMatch(inputField.text, @"^\d{6}$"))
+        string input = inputField.text;
+        
+        if (input.Length == 8)
         {
-            string day = inputField.text.Substring(0, 2);
-            string month = inputField.text.Substring(2, 2);
-            string year = "20" + inputField.text.Substring(4, 2);
-            string formattedDate = $"{day}.{month}.{year}";
-
-            inputField.text = formattedDate;
-            eventAction?.Invoke(formattedDate);
+            try
+            {
+                string formattedDate = $"{input.Substring(0, 2)}.{input.Substring(2, 2)}.{input.Substring(4, 4)}";
+                inputField.text = formattedDate;
+                eventAction?.Invoke(formattedDate);
+            }
+            catch (Exception ex)
+            {
+                Debug.Log($"Error formatting date input: {ex.Message}");
+            }
         }
-        else if (Regex.IsMatch(inputField.text, @"^\d{2}\.\d{2}\.\d{4}$"))
+        else if (input.Length > 8)
         {
-            eventAction?.Invoke(inputField.text);
+            inputField.text = input.Substring(0, 8);
         }
     }
-    
+
+    private void HideInput(string text)
+    {
+        foreach (var @object in _disableObject)
+        {
+            @object.gameObject.SetActive(false);
+        }
+    }
+
+    private void ActivateInput(string text)
+    {
+        foreach (var @object in _disableObject)
+        {
+            @object.gameObject.SetActive(true);
+        }
+    }
+
+    private void GoalStartInputed(string text)
+    {
+        _first.gameObject.SetActive(false);
+        _second.gameObject.SetActive(false);
+    }
+
+    private void GoladEndInputed(string text)
+    {
+        _first.gameObject.SetActive(true);
+        _second.gameObject.SetActive(true);
+    }
+
     private void OnBackClicked() => BackClicked?.Invoke();
     private void OnSaveClicked() => SaveClicked?.Invoke();
     private void OnNameInputed(string text) => NameInputed?.Invoke(text);
@@ -173,4 +227,3 @@ public class EditProjectView : MonoBehaviour
     private void OnStartDateChanged(string date) => ValidateAndFormatDateInput(_startDateInput, StartDateInputed);
     private void OnEndDateChanged(string date) => ValidateAndFormatDateInput(_endDateInput, EndDateInputed);
 }
-

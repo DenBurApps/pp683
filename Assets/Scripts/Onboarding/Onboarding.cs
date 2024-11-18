@@ -10,8 +10,6 @@ public class Onboarding : MonoBehaviour
 
     private void Awake()
     {
-        PlayerPrefs.DeleteAll();
-        
         if (PlayerPrefs.HasKey("Onboarding"))
         {
             gameObject.SetActive(false);

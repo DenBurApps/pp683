@@ -15,6 +15,7 @@ public class ProjectPlane : MonoBehaviour
     private HobbyLogoHolder _logoHolder;
 
     public event Action<ProjectPlane> Opened;
+    public event Action UpdatedData;
 
     public ProjectData Data { get; private set; }
     public bool IsActive { get; private set; }
@@ -48,6 +49,16 @@ public class ProjectPlane : MonoBehaviour
         _logo.enabled = false;
         gameObject.SetActive(true);
         IsActive = true;
+        
+        if (Data.Type is GoalTypes.Yes or GoalTypes.AlmostThere)
+        {
+            _logo.enabled = true;
+            _logo.sprite = _logoHolder.GetLogoSprite(Data.Type);
+        }
+        else
+        {
+            _logo.enabled = false;
+        }
     }
 
     public void UpdateData(ProjectData data)
@@ -68,6 +79,8 @@ public class ProjectPlane : MonoBehaviour
         {
             _logo.enabled = false;
         }
+        
+        UpdatedData?.Invoke();
     }
 
     public void Disable()

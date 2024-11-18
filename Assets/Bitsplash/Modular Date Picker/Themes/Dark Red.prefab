@@ -1134,7 +1134,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079859703847738463, guid: 46dca76c5c44b2247ac4af650a8dc0f6, type: 3}
       propertyPath: text
-      value: November, 2024
+      value: "\u043D\u043E\u044F\u0431\u0440\u044C, 2024"
       objectReference: {fileID: 0}
     - target: {fileID: 5133943078120845741, guid: 46dca76c5c44b2247ac4af650a8dc0f6, type: 3}
       propertyPath: m_Name

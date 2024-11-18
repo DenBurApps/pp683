@@ -25,6 +25,7 @@ public class MainScreenHobbieController : MonoBehaviour
         {
             plane.SetHolder(_logoHolder);
             plane.Opened += OpenPlane;
+            plane.UpdatedData += SaveHobbies;
         }
 
         _addHobbie.Saved += EnablePlane;
@@ -36,6 +37,7 @@ public class MainScreenHobbieController : MonoBehaviour
         foreach (var plane in _planes)
         {
             plane.Opened -= OpenPlane;
+            plane.UpdatedData -= SaveHobbies;
         }
 
         _addHobbie.Saved -= EnablePlane;
